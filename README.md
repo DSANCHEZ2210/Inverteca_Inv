@@ -20,7 +20,7 @@ GitHub Actions (`.github/workflows/actualizar.yml`) lo corre todos los días a l
 
 1. **Contraseña:** Settings → Secrets and variables → Actions → New repository secret →
    nombre `SITE_PASSWORD`, valor la contraseña que usarán tú y tu jefe.
-2. **Página:** Settings → Pages → Source: *Deploy from a branch* → Branch `main`, carpeta `/docs`.
+2. **Página:** Settings → Pages → Source: **GitHub Actions**.
 3. **Primera corrida:** Actions → *Actualizar prospectos* → *Run workflow*.
 4. El link queda en `https://<usuario>.github.io/<repositorio>/`.
 

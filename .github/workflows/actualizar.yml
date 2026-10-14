@@ -4,9 +4,14 @@ on:
   schedule:
     - cron: "0 12 * * *"   # todos los días 6:00 am hora de Monterrey
   workflow_dispatch: {}     # botón "Run workflow" para correrlo a mano
+  push:
+    branches: [main]
+    paths: ["agent/**", "docs/index.html", ".github/workflows/**", "requirements.txt"]
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: actualizar-prospectos
@@ -16,6 +21,9 @@ jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -35,3 +43,14 @@ jobs:
           git add docs/data.enc.json
           git diff --cached --quiet || git commit -m "Actualizar prospectos $(date -u +%F)"
           git push
+      # Publica la página desde aquí mismo (Settings → Pages → Source: GitHub Actions).
+      - name: Liberar publicación atorada
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/deployments/982086196e30b148923d9765e9b64d6b77209aca/cancel" || true
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@v4
