@@ -17,7 +17,7 @@ from pathlib import Path
 from . import config
 from .crypto import decrypt, encrypt
 from .extract import domain_of, enrich
-from .score import classify, score
+from .score import classify, is_relevant, score
 from .search import search
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -140,9 +140,17 @@ def run():
             continue
         print(f"  visitando {url}")
         p = build_prospect(h, today)
-        if p:
+        if p and is_relevant(p):
             db[k] = p
             added += 1
+        elif p:
+            print("    descartado: no habla de inversión en México")
+
+    # Limpia lo que haya entrado antes de que existiera el filtro.
+    before = len(db)
+    db = {k: p for k, p in db.items() if is_relevant(p) and not is_blocked(p.get("url", ""))}
+    if len(db) < before:
+        print(f"Limpieza: {before - len(db)} registros irrelevantes eliminados.")
 
     for p in db.values():
         p["score"], p["reasons"] = score(p)

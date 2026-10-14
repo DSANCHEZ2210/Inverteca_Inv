@@ -41,8 +41,30 @@ BLOCKED_DOMAINS = {
     "forbes.com.mx", "expansion.mx", "elfinanciero.com.mx", "eleconomista.com.mx",
     "elnorte.com", "milenio.com", "infobae.com", "bloomberg.com", "reuters.com",
     "inverteca.mx", "pinterest.com", "scribd.com", "issuu.com", "medium.com",
-    "gob.mx", "cnbv.gob.mx", "condusef.gob.mx", "mercadolibre.com.mx",
+    "gob.mx", "cnbv.gob.mx", "finance.yahoo.com", "investing.com", "marketwatch.com",
+    "stockanalysis.com", "zacks.com", "britannica.com", "rae.es", "pexels.com", "pixabay.com",
+    "stackexchange.com", "microsoft.com", "familysearch.org", "condusef.gob.mx", "mercadolibre.com.mx",
 }
+
+# Filtro de relevancia: un sitio solo entra a la base si su texto tiene al menos una
+# palabra de inversión Y alguna señal de México. Así se descarta la basura del buscador.
+RELEVANCE_INVEST = [
+    "family office", "oficina familiar", "fondo de inversión", "fondos de inversión", "private equity",
+    "capital privado", "venture capital", "capital de riesgo", "inversionista", "inversor",
+    "angel investor", "inversión inmobiliaria", "inversiones inmobiliarias", "real estate investment",
+    "gestión patrimonial", "wealth management", "banca privada", "asset management",
+    "administradora de fondos", "gestora", "ckd", "cerpi", "fibra", "portafolio de inversión",
+    "patrimonio familiar", "investment", "inversiones",
+]
+RELEVANCE_MEXICO = [
+    "méxico", "mexico", "monterrey", "nuevo león", "nuevo leon", "cdmx", "ciudad de méxico",
+    "guadalajara", "jalisco", "querétaro", "queretaro", "san pedro garza", "+52", "mxn",
+]
+# Sitios que no son prospectos aunque mencionen inversión.
+RELEVANCE_BLOCK_WORDS = [
+    "diccionario", "dictionary", "fondos de pantalla", "wallpaper", "grammar", "stock quote",
+    "cotización de la acción", "market report", "market size",
+]
 
 # Palabras para clasificar el tipo de prospecto (se busca en título + snippet + web).
 TYPE_KEYWORDS = {

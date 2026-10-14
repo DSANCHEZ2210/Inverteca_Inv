@@ -1,7 +1,7 @@
 """Búsqueda web.
 
-Sin clave prueba varios buscadores gratis en orden (DuckDuckGo, DuckDuckGo Lite, Bing,
-Mojeek) y usa el primero que devuelva resultados, porque a veces bloquean a los
+Sin clave prueba varios buscadores gratis en orden (DuckDuckGo, DuckDuckGo Lite, Mojeek,
+Bing) y usa el primero que devuelva resultados, porque a veces bloquean a los
 servidores de GitHub. Si existe la variable de entorno BRAVE_API_KEY usa Brave Search
 API (plan gratis de 2,000 búsquedas al mes), que es lo más estable.
 """
@@ -89,8 +89,8 @@ def _mojeek(query):
 ENGINES = [
     ("DuckDuckGo", _duckduckgo),
     ("DuckDuckGo Lite", _duckduckgo_lite),
-    ("Bing", _bing),
     ("Mojeek", _mojeek),
+    ("Bing", _bing),
 ]
 
 

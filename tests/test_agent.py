@@ -79,6 +79,12 @@ class TestParsing(unittest.TestCase):
         empty, _ = score.score({"name": "x", "type": "Otro"})
         self.assertEqual(empty, 0)
 
+    def test_relevance(self):
+        self.assertTrue(score.is_relevant({"url": "https://fo.mx/", "name": "FO", "text": "family office"}))
+        self.assertTrue(score.is_relevant({"url": "https://fo.com/", "text": "Fondo de inversión con oficinas en Monterrey"}))
+        self.assertFalse(score.is_relevant({"url": "https://dle.rae.es/fondo", "text": "Diccionario: fondo, inversión, México"}))
+        self.assertFalse(score.is_relevant({"url": "https://pixabay.com/x", "text": "fotos gratis de fondos"}))
+
     def test_crypto_roundtrip(self):
         blob = crypto.encrypt({"a": "ñ"}, "clave")
         self.assertEqual(crypto.decrypt(blob, "clave"), {"a": "ñ"})
@@ -111,6 +117,13 @@ class TestRun(unittest.TestCase):
                 out2 = crypto.decrypt(json.loads(data.read_text()), "secreto")
                 self.assertEqual(len(out2["prospects"]), 2)
                 self.assertEqual(out2["new_today"], 0)
+                # Basura que entró antes del filtro se limpia en la siguiente corrida.
+                junk = dict(fo, key="pixabay.com", url="https://pixabay.com/", name="Pixabay", text="fondos de pantalla")
+                out2["prospects"].append(junk)
+                data.write_text(json.dumps(crypto.encrypt(out2, "secreto")))
+                main.run()
+                out3 = crypto.decrypt(json.loads(data.read_text()), "secreto")
+                self.assertNotIn("pixabay.com", [p["key"] for p in out3["prospects"]])
 
 
 if __name__ == "__main__":

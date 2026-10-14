@@ -2,6 +2,22 @@
 from . import config
 
 
+def is_relevant(prospect):
+    """True si el prospecto habla de inversión y tiene relación con México."""
+    url = prospect.get("url", "").lower()
+    if "linkedin.com/in/" in url:
+        t = " ".join([prospect.get("name", ""), prospect.get("snippet", "")]).lower()
+    else:
+        t = " ".join([prospect.get("name", ""), prospect.get("snippet", ""),
+                      prospect.get("description", ""), prospect.get("text", "")]).lower()
+    if any(w in t[:3000] for w in config.RELEVANCE_BLOCK_WORDS):
+        return False
+    invest = any(w in t for w in config.RELEVANCE_INVEST)
+    mexico = ".mx" in url.split("/")[2] if url.count("/") >= 2 else False
+    mexico = mexico or any(w in t for w in config.RELEVANCE_MEXICO)
+    return invest and mexico
+
+
 def classify(text):
     t = text.lower()
     for kind, words in config.TYPE_KEYWORDS.items():
