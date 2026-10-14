@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Prospectos Inverteca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #14202b; --muted: #5d6b78; --line: #e3e7ec;
+    --accent: #0f7a5c; --accent-soft: #e5f3ee; --warn: #b26a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #0f1418; --card: #172027; --text: #e8edf1; --muted: #9aa8b4; --line: #26323c;
+            --accent: #3cc49a; --accent-soft: #163a30; --warn: #e3a64a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 Inter, system-ui, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
+  header { display: flex; justify-content: space-between; align-items: end; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+  h1 { margin: 0; font-size: 24px; }
+  h2 { font-size: 17px; margin: 28px 0 12px; }
+  .muted { color: var(--muted); font-size: 13px; }
+  .top { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+  .rank { font-size: 12px; font-weight: 700; color: var(--accent); }
+  .name { font-weight: 600; font-size: 16px; margin: 2px 0; word-break: break-word; }
+  .tag { display: inline-block; background: var(--accent-soft); color: var(--accent); border-radius: 99px; padding: 1px 9px; font-size: 12px; font-weight: 500; }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; margin: 10px 0 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .reasons { font-size: 12.5px; color: var(--muted); margin: 6px 0 10px; }
+  .contacts { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
+  td > a { color: var(--accent); }
+  .contacts a { color: var(--text); text-decoration: none; word-break: break-all; }
+  .contacts a:hover { color: var(--accent); }
+  .btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .btn { border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 8px; padding: 5px 10px; font: inherit; font-size: 13px; cursor: pointer; text-decoration: none; }
+  .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  input, select { font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--text); }
+  input[type=search] { flex: 1; min-width: 180px; }
+  .table-wrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  tr.done td { opacity: .5; }
+  #gate { max-width: 360px; margin: 14vh auto; text-align: center; }
+  #gate input { width: 100%; margin: 14px 0 10px; }
+  #gate .btn { width: 100%; padding: 9px; }
+  .err { color: var(--warn); font-size: 13px; min-height: 18px; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <form id="gate" class="card">
+    <h1>Prospectos Inverteca</h1>
+    <p class="muted">Base privada. Escribe la contraseña del equipo.</p>
+    <input id="pw" type="password" placeholder="Contraseña" autocomplete="current-password" required>
+    <button class="btn primary" type="submit">Entrar</button>
+    <p class="err" id="err"></p>
+  </form>
+
+  <main id="app" class="hidden">
+    <header>
+      <div>
+        <h1>Prospectos para Inverteca</h1>
+        <div class="muted" id="meta"></div>
+      </div>
+      <button class="btn" id="csv">Descargar CSV</button>
+    </header>
+
+    <h2 id="topTitle">Top 5 del día</h2>
+    <div class="top" id="top"></div>
+
+    <h2>Base completa</h2>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Buscar nombre, ciudad, correo…">
+      <select id="type"><option value="">Todos los tipos</option></select>
+      <select id="state">
+        <option value="">Todos</option>
+        <option value="pending">Sin contactar</option>
+        <option value="done">Contactados</option>
+      </select>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>#</th><th>Prospecto</th><th>Tipo</th><th>Puntaje</th><th>Contacto</th><th>Contactado</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table></div>
+    <p class="muted">El puntaje (0 a 100) estima qué tan probable es que invierta en Inverteca según su perfil público. Los datos vienen de fuentes públicas; verifícalos antes de contactar.</p>
+  </main>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+let DATA = null;
+
+function store(fn, fallback) { try { return fn(); } catch (e) { return fallback; } }
+const done = store(() => JSON.parse(localStorage.getItem("contactados") || "{}"), {});
+const saveDone = () => store(() => localStorage.setItem("contactados", JSON.stringify(done)));
+
+async function decrypt(blob, password) {
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: b64(blob.salt), iterations: blob.iter, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64(blob.iv) }, key, b64(blob.data));
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+
+async function unlock(password) {
+  const res = await fetch("data.enc.json?t=" + Date.now());
+  if (!res.ok) throw new Error("Todavía no hay datos. La primera corrida del agente no ha terminado.");
+  const blob = await res.json();
+  try { DATA = await decrypt(blob, password); }
+  catch (e) { throw new Error("Contraseña incorrecta."); }
+  store(() => sessionStorage.setItem("pw", password));
+  $("gate").classList.add("hidden");
+  $("app").classList.remove("hidden");
+  render();
+}
+
+$("gate").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  $("err").textContent = "Abriendo…";
+  try { await unlock($("pw").value); } catch (err) { $("err").textContent = err.message; }
+});
+const saved = store(() => sessionStorage.getItem("pw"));
+if (saved) unlock(saved).catch(() => {});
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const waLink = (phone) => "https://wa.me/" + phone.replace(/\D/g, "").replace(/^(\d{10})$/, "52$1");
+
+function contactLines(p, max = 2) {
+  const out = [];
+  (p.emails || []).slice(0, max).forEach((e) => out.push(`<a href="mailto:${esc(e)}">✉️ ${esc(e)}</a>`));
+  (p.phones || []).slice(0, max).forEach((t) => out.push(`<a href="tel:${esc(t.replace(/\s/g, ""))}">📞 ${esc(t)}</a>`));
+  (p.whatsapp || []).slice(0, 1).forEach((t) => out.push(`<a href="${waLink(t)}" target="_blank" rel="noopener">💬 WhatsApp ${esc(t)}</a>`));
+  (p.linkedin || []).slice(0, 1).forEach((l) => out.push(`<a href="${esc(l)}" target="_blank" rel="noopener">🔗 LinkedIn</a>`));
+  return out.length ? out.join("") : `<span class="muted">Sin contacto público</span>`;
+}
+
+function render() {
+  const ps = DATA.prospects;
+  const updated = new Date(DATA.updated);
+  $("meta").textContent = `Actualizado ${updated.toLocaleString("es-MX", { dateStyle: "long", timeStyle: "short" })} · ${ps.length} prospectos · ${DATA.new_today} nuevos hoy`;
+  $("topTitle").textContent = `Top ${DATA.top_n} del día`;
+
+  const top = ps.filter((p) => !done[p.key]).slice(0, DATA.top_n);
+  $("top").innerHTML = top.map((p, i) => `
+    <div class="card">
+      <div class="rank">#${i + 1} · ${p.score}/100</div>
+      <div class="name">${esc(p.name)}</div>
+      <span class="tag">${esc(p.type)}</span>
+      <div class="bar"><i style="width:${p.score}%"></i></div>
+      <div class="reasons">${esc((p.reasons || []).join(" · "))}</div>
+      <div class="contacts">${contactLines(p)}</div>
+      <div class="btns">
+        <a class="btn" href="${esc(p.url)}" target="_blank" rel="noopener">Ver sitio</a>
+        <button class="btn" data-done="${esc(p.key)}">Marcar contactado</button>
+      </div>
+    </div>`).join("") || `<p class="muted">Ya contactaron a todos. Mañana llegan nuevos.</p>`;
+
+  const types = [...new Set(ps.map((p) => p.type))].sort();
+  const sel = $("type");
+  if (sel.options.length === 1) types.forEach((t) => sel.add(new Option(t, t)));
+  renderTable();
+}
+
+function renderTable() {
+  const q = $("q").value.toLowerCase(), t = $("type").value, st = $("state").value;
+  const rows = DATA.prospects.filter((p) => {
+    if (t && p.type !== t) return false;
+    if (st === "done" && !done[p.key]) return false;
+    if (st === "pending" && done[p.key]) return false;
+    if (!q) return true;
+    return [p.name, p.url, p.snippet, p.description, ...(p.emails || []), ...(p.phones || [])].join(" ").toLowerCase().includes(q);
+  });
+  $("rows").innerHTML = rows.map((p) => `
+    <tr class="${done[p.key] ? "done" : ""}">
+      <td>${DATA.prospects.indexOf(p) + 1}</td>
+      <td><a href="${esc(p.url)}" target="_blank" rel="noopener"><b>${esc(p.name)}</b></a><div class="muted">${esc((p.description || p.snippet || "").slice(0, 140))}</div></td>
+      <td>${esc(p.type)}</td>
+      <td>${p.score}</td>
+      <td><div class="contacts">${contactLines(p, 1)}</div></td>
+      <td><input type="checkbox" data-key="${esc(p.key)}" ${done[p.key] ? "checked" : ""} aria-label="Contactado"></td>
+    </tr>`).join("");
+}
+
+document.addEventListener("click", (e) => {
+  const k = e.target.dataset && e.target.dataset.done;
+  if (k) { done[k] = new Date().toISOString().slice(0, 10); saveDone(); render(); }
+});
+document.addEventListener("change", (e) => {
+  const k = e.target.dataset && e.target.dataset.key;
+  if (k) { if (e.target.checked) done[k] = new Date().toISOString().slice(0, 10); else delete done[k]; saveDone(); render(); }
+});
+["q", "type", "state"].forEach((id) => $(id).addEventListener("input", renderTable));
+
+$("csv").addEventListener("click", () => {
+  const cols = ["name", "type", "score", "url", "emails", "phones", "whatsapp", "linkedin", "reasons", "first_seen"];
+  const cell = (v) => `"${String(Array.isArray(v) ? v.join(" / ") : v ?? "").replace(/"/g, '""')}"`;
+  const csv = [cols.join(","), ...DATA.prospects.map((p) => cols.map((c) => cell(p[c])).join(","))].join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob(["﻿" + csv], { type: "text/csv" }));
+  a.download = `prospectos-inverteca-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+});
+</script>
+</body>
+</html>
