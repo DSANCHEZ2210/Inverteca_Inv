@@ -43,8 +43,24 @@ BLOCKED_DOMAINS = {
     "inverteca.mx", "pinterest.com", "scribd.com", "issuu.com", "medium.com",
     "gob.mx", "cnbv.gob.mx", "finance.yahoo.com", "investing.com", "marketwatch.com",
     "stockanalysis.com", "zacks.com", "britannica.com", "rae.es", "pexels.com", "pixabay.com",
-    "stackexchange.com", "microsoft.com", "familysearch.org", "condusef.gob.mx", "mercadolibre.com.mx",
+    "stackexchange.com", "microsoft.com", "familysearch.org",
+    # Consultoras, universidades, medios y directorios: hablan de inversión pero no invierten.
+    "ey.com", "kpmg.com", "deloitte.com", "pwc.com", "tec.mx", "itam.mx", "mit.edu", "ktc.mx",
+    "bloomberglinea.com", "ambito.com", "wallstreetmojo.com", "tracxn.com", "growjo.com",
+    "infoisinfo.com.mx", "seccionamarilla.com.mx", "inmuebles24.com", "lamudi.com.mx",
+    "lexlatin.com", "centrourbano.com", "realestatemarket.com.mx", "citywire.com", "ilpa.org",
+    "caf.com", "bmv.com.mx", "whitepaper.mx", "elconta.mx", "emprendedor.com", "techla.pro",
+    "allfamilyoffices.com", "lpbacked.com", "privateequitylist.com", "inmobiliare.com",
+    "griinstitute.org", "cnmv.es", "guiamexico.com.mx", "grupoenconcreto.com", "rankia.mx",
+    "angelinvestmentnetwork.com.mx", "tokendesigncompetition.com", "qredio.com", "pronetwork.mx", "condusef.gob.mx", "mercadolibre.com.mx",
 }
+
+# Si la URL tiene alguna de estas partes es un artículo o nota, no la página de un prospecto.
+ARTICLE_URL_PARTS = [
+    "/blog", "/noticia", "/news", "/articulo", "/articles", "/post/", "/journal", "/etiqueta",
+    "/tag/", "/ideas", "/insights", "/opinion", "/campaigns", "/handle/", "/thread",
+    "/2018/", "/2019/", "/2020/", "/2021/", "/2022/", "/2023/", "/2024/", "/2025/", "/2026/",
+]
 
 # Filtro de relevancia: un sitio solo entra a la base si su texto tiene al menos una
 # palabra de inversión Y alguna señal de México. Así se descarta la basura del buscador.

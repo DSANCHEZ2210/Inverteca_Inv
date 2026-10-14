@@ -85,6 +85,13 @@ class TestParsing(unittest.TestCase):
         self.assertFalse(score.is_relevant({"url": "https://dle.rae.es/fondo", "text": "Diccionario: fondo, inversión, México"}))
         self.assertFalse(score.is_relevant({"url": "https://pixabay.com/x", "text": "fotos gratis de fondos"}))
 
+    def test_blocks_articles_and_consultancies(self):
+        self.assertTrue(main.is_blocked("https://gs.com.mx/blog/family-office-inversion/"))
+        self.assertTrue(main.is_blocked("https://www.ey.com/es_mx/services/family-office"))
+        self.assertTrue(main.is_blocked("https://realestatemarket.com.mx/articulos/x"))
+        self.assertFalse(main.is_blocked("https://www.proeza.com.mx/family-office"))
+        self.assertFalse(main.is_blocked("https://mx.linkedin.com/company/ennea-family-office"))
+
     def test_crypto_roundtrip(self):
         blob = crypto.encrypt({"a": "ñ"}, "clave")
         self.assertEqual(crypto.decrypt(blob, "clave"), {"a": "ñ"})

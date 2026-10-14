@@ -44,6 +44,9 @@ def is_blocked(url):
     dom = domain_of(url)
     if "linkedin.com" in dom:
         return "/in/" not in url and "/company/" not in url
+    path = url.lower().split(dom, 1)[-1]
+    if any(part in path for part in config.ARTICLE_URL_PARTS):
+        return True
     return any(dom == b or dom.endswith("." + b) for b in config.BLOCKED_DOMAINS)
 
 
