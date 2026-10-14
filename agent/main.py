@@ -23,13 +23,15 @@ from .search import search
 ROOT = Path(__file__).resolve().parent.parent
 DATA_FILE = ROOT / "docs" / "data.enc.json"
 SEEDS_FILE = ROOT / "seeds.csv"
-MAX_NEW_SITES = int(os.environ.get("MAX_NEW_SITES", "40"))
+MAX_NEW_SITES = int(os.environ.get("MAX_NEW_SITES", "60"))
 
 
 def todays_queries(today):
     n = len(config.QUERIES)
-    start = (today.toordinal() * config.QUERIES_PER_RUN) % n
-    return [config.QUERIES[(start + i) % n] for i in range(min(config.QUERIES_PER_RUN, n))]
+    # Con Brave (2,000 búsquedas al mes) alcanza para lanzar todas cada día.
+    per_run = n if os.environ.get("BRAVE_API_KEY") else min(config.QUERIES_PER_RUN, n)
+    start = (today.toordinal() * per_run) % n
+    return [config.QUERIES[(start + i) % n] for i in range(per_run)]
 
 
 def key_for(url):
