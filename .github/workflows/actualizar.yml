@@ -6,7 +6,7 @@ on:
   workflow_dispatch: {}     # botón "Run workflow" para correrlo a mano
   push:
     branches: [main]
-    paths: ["agent/**", "docs/index.html", ".github/workflows/**", "requirements.txt"]
+    paths: ["agent/**", "docs/index.html", "requirements.txt"]
 
 permissions:
   contents: write
@@ -44,10 +44,6 @@ jobs:
           git diff --cached --quiet || git commit -m "Actualizar prospectos $(date -u +%F)"
           git push
       # Publica la página desde aquí mismo (Settings → Pages → Source: GitHub Actions).
-      - name: Liberar publicación atorada
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api -X POST "repos/${{ github.repository }}/pages/deployments/982086196e30b148923d9765e9b64d6b77209aca/cancel" || true
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
