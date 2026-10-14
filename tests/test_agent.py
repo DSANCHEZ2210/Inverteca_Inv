@@ -39,6 +39,25 @@ class TestParsing(unittest.TestCase):
         self.assertIn("San Pedro", res[0]["snippet"])
         self.assertEqual(len(res), 3)
 
+    def test_other_engines(self):
+        lite = '<a class="result-link" href="https://fo.mx/">FO</a><td class="result-snippet">family office</td>'
+        self.assertEqual(search.parse_duckduckgo_lite(lite)[0]["url"], "https://fo.mx/")
+        import base64
+        enc = base64.urlsafe_b64encode(b"https://fondo.mx/").decode().rstrip("=")
+        bing = f'<li class="b_algo"><h2><a href="https://www.bing.com/ck/a?!&u=a1{enc}&ntb=1">Fondo</a></h2><div class="b_caption"><p>Fondo inmobiliario</p></div></li>'
+        self.assertEqual(search.parse_bing(bing)[0], {"title": "Fondo", "url": "https://fondo.mx/", "snippet": "Fondo inmobiliario"})
+        moj = '<ul class="results-standard"><li><h2><a class="title" href="https://x.mx/">X</a></h2><p class="s">snip</p></li></ul>'
+        self.assertEqual(search.parse_mojeek(moj)[0]["url"], "https://x.mx/")
+
+    def test_fallback(self):
+        search._dead.clear()
+        with mock.patch.object(search, "ENGINES", [("A", lambda q: []), ("B", lambda q: [{"title": "t", "url": "https://b.mx", "snippet": ""}])]), \
+             mock.patch.dict("os.environ", {}, clear=False):
+            os_key = __import__("os").environ.pop("BRAVE_API_KEY", None)
+            self.assertEqual(search.search("q")[0]["url"], "https://b.mx")
+            self.assertIn("A", search._dead)
+        search._dead.clear()
+
     def test_contacts(self):
         c = extract.extract_contacts(SITE_CONTACT, "https://www.fo-ejemplo.mx/contacto")
         self.assertEqual(c["emails"], ["hola@fo-ejemplo.mx"])
