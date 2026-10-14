@@ -92,6 +92,14 @@ class TestParsing(unittest.TestCase):
         self.assertFalse(main.is_blocked("https://www.proeza.com.mx/family-office"))
         self.assertFalse(main.is_blocked("https://mx.linkedin.com/company/ennea-family-office"))
 
+    def test_password_whitespace_and_reset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "data.enc.json"
+            data.write_text(json.dumps(crypto.encrypt({"prospects": [{"key": "a"}]}, "clave\n")))
+            with mock.patch.object(main, "DATA_FILE", data):
+                self.assertIn("a", main.load_db("clave", "clave\n"))
+                self.assertEqual(main.load_db("otra"), {})
+
     def test_crypto_roundtrip(self):
         blob = crypto.encrypt({"a": "ñ"}, "clave")
         self.assertEqual(crypto.decrypt(blob, "clave"), {"a": "ñ"})

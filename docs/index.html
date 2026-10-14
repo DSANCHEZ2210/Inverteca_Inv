@@ -126,7 +126,7 @@ async function unlock(password) {
 $("gate").addEventListener("submit", async (e) => {
   e.preventDefault();
   $("err").textContent = "Abriendo…";
-  try { await unlock($("pw").value); } catch (err) { $("err").textContent = err.message; }
+  try { await unlock($("pw").value.trim()); } catch (err) { $("err").textContent = err.message; }
 });
 const saved = store(() => sessionStorage.getItem("pw"));
 if (saved) unlock(saved).catch(() => {});

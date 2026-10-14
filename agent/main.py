@@ -57,11 +57,20 @@ def clean_name(title):
     return title.strip()[:90]
 
 
-def load_db(password):
+def load_db(password, raw_password=None):
     if not DATA_FILE.exists():
         return {}
     blob = json.loads(DATA_FILE.read_text())
-    return {p["key"]: p for p in decrypt(blob, password)["prospects"]}
+    for pw in dict.fromkeys([password, raw_password]):
+        if not pw:
+            continue
+        try:
+            return {p["key"]: p for p in decrypt(blob, pw)["prospects"]}
+        except Exception:
+            pass
+    # Si cambiaron la contraseña, la base anterior ya no se puede abrir: se empieza de cero.
+    print("Aviso: la base anterior no abre con la contraseña actual; se crea una nueva.")
+    return {}
 
 
 def load_seeds():
@@ -118,12 +127,14 @@ def build_prospect(hit, today):
 
 
 def run():
-    password = os.environ.get("SITE_PASSWORD")
+    raw_password = os.environ.get("SITE_PASSWORD") or ""
+    # Quitamos espacios y saltos de línea que se cuelan al pegar la contraseña en GitHub.
+    password = raw_password.strip()
     if not password:
         sys.exit("Falta la variable SITE_PASSWORD")
     today_d = dt.date.today()
     today = today_d.isoformat()
-    db = load_db(password)
+    db = load_db(password, raw_password)
 
     hits = load_seeds()
     for q in todays_queries(today_d):
